@@ -3,14 +3,16 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route('/process-date')
+@app.route('/process-date', methods=['POST'])
 def process_date_route():
-    date_str = request.args.get('date')
+    # Tenta obter o JSON enviado na requisição
+    data = request.get_json()
     
-    # Verifica se a data foi fornecida
-    if not date_str:
-        return jsonify({"error": "Por favor, forneça a data no formato ISO 8601. Ex: ?date=2024-10-24T13:00:00Z"}), 400
+    # Verifica se a chave 'date' está presente no JSON
+    if not data or 'date' not in data:
+        return jsonify({"error": "Por favor, forneça a data no formato ISO 8601 no campo 'date'."}), 400
     
+    date_str = data['date']
     formatted_date, days_remaining = process_date(date_str)
     
     # Verifica se ocorreu algum erro no processamento da data
